@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  namenode:
+    image: hadoop-master:latest
+    container_name: master
+    hostname: master
+    ports:
+      - 9999:9999
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+      - hadoop_historyserver:/hadoop/yarn/timeline
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - hadoop.env
+
+  worker1:
+    image: hadoop-worker:latest
+    container_name: worker1
+    hostname: worker1
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "master:50070"
+    env_file:
+      - hadoop.env
+
+  worker2:
+    image: hadoop-worker:latest
+    container_name: worker2
+    hostname: worker2
+    volumes:
+      - hadoop_datanode2:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "master:50070"
+    env_file:
+      - hadoop.env
+
+  edge:
+    image: hadoop-edge:latest
+    container_name: edge
+    hostname: edge
+    environment:
+      SERVICE_PRECONDITION: "master:50070"
+    env_file:
+      - hadoop.env
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
+  hadoop_datanode2:
+  hadoop_historyserver:
